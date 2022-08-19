@@ -12,7 +12,15 @@ else
 su - elasticsearch -c /usr/share/elasticsearch/bin/elasticsearch > /dev/null 2>&1 & 
 echo -e "\relastic has started"
 fi
-
+                                                  #rabbitmq
+if (( $(ps aux | grep 'rabbitmq' | awk '{print $2}' | wc -l) > 0 ))
+then
+echo -e "\rrabbitmq is already running"
+else
+/usr/share/rabbitmq-server/sbin/rabbitmq-plugins enable --offline rabbitmq_management
+/usr/share/rabbitmq-server/sbin/rabbitmq-server &
+echo -e "\rrabbitmq has started"
+fi
 							#nginx
 if (( $(ps aux | grep 'nginx' | awk '{print $2}' | wc -l) > 0 ))
 then
