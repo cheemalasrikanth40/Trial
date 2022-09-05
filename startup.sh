@@ -30,6 +30,15 @@ mkdir -p /var/log/nginx /var/tmp/nginx
 /usr/sbin/nginx -g 'daemon off;' &
 echo -e "\rnginx has started"
 fi
+                                                     #varnish
+if (( $(ps aux | grep 'varnishd' | awk '{print $2}' | wc -l) > 0 ))
+then
+echo -e "\rvarnish is already running"
+else
+varnishd -f /etc/varnish/default.vcl &
+echo -e "\rvarnish has started"
+fi
+
 
 							#php
 if (( $(ps aux | grep 'php-fpm7' | awk '{print $2}' | wc -l) > 0 ))
