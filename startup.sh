@@ -92,10 +92,11 @@ exec /usr/bin/mysqld --user=mysql --datadir=/tmp/mysql --console --log-bin-trust
 							#version list
 
 hostname -i
-hostname
 composer -V
 curl http://localhost:9200
 redis-cli --version
 php -v
 mysql -V
+/usr/share/rabbitmq-server/sbin/rabbitmqctl --version
+varnishd -V
 /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config
