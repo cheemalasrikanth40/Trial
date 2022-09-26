@@ -22,23 +22,14 @@ else
 echo -e "\rrabbitmq has started"
 fi
 							#nginx
-if (( $(ps aux | grep 'nginx' | awk '{print $2}' | wc -l) > 0 ))
-then
-echo -e "\rnginx is already running"
-else
-mkdir -p /var/log/nginx /var/tmp/nginx
-/usr/sbin/nginx -g 'daemon off;' &
-echo -e "\rnginx has started"
-fi
-                                                     #varnish
-if (( $(ps aux | grep 'varnishd' | awk '{print $2}' | wc -l) > 0 ))
-then
-echo -e "\rvarnish is already running"
-else
-varnishd -f /etc/varnish/default.vcl &
-echo -e "\rvarnish has started"
-fi
-
+#if (( $(ps aux | grep 'nginx' | awk '{print $2}' | wc -l) > 0 ))
+#then
+#echo -e "\rnginx is already running"
+#else
+#mkdir -p /var/log/nginx /var/tmp/nginx 
+#/usr/sbin/nginx -g 'daemon off;' &
+#echo -e "\rnginx has started"
+#fi
 
 							#php
 if (( $(ps aux | grep 'php-fpm7' | awk '{print $2}' | wc -l) > 0 ))
@@ -49,8 +40,17 @@ else
 echo -e "\rphp has started"
 fi
 
+                                                     #varnish
+if (( $(ps aux | grep 'varnishd' | awk '{print $2}' | wc -l) > 0 ))
+then
+echo -e "\rvarnish is already running"
+else
+varnishd -f /etc/varnish/default.vcl &
+echo -e "\rvarnish has started"
+fi
+
 							#mysql
-VOLUME_HOME=/tmp/mysql
+VOLUME_HOME=/var/lib/mysql
 if [ ! -d "/run/mysqld" ]; then
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
@@ -79,7 +79,7 @@ echo "GRANT ALL ON magento.* to 'magento'@'%' IDENTIFIED BY 'magento';" >> $tfil
 echo 'FLUSH PRIVILEGES;' >> $tfile
 echo 'SET GLOBAL log_bin_trust_function_creators = 1;' >> $tfile
 echo "[i] run tempfile: $tfile"
-/usr/bin/mysqld --user=mysql --datadir=/tmp/mysql --bootstrap --verbose=0 < $tfile
+/usr/bin/mysqld --user=mysql --datadir=/var/lib/mysql --bootstrap --verbose=0 < $tfile
 rm -f $tfile
 echo "[i] Sleeping 5 sec"
 sleep 5
@@ -87,11 +87,23 @@ else
     echo "=> Using an existing data of MySQL <=="
 fi
 echo "Starting process"
-exec /usr/bin/mysqld --user=mysql --datadir=/tmp/mysql --console --log-bin-trust-function-creators=1 > /dev/null 2>&1 &
+exec /usr/bin/mysqld --user=mysql --datadir=/var/lib/mysql --console --log-bin-trust-function-creators=1 > /dev/null 2>&1 &
+
+if (( $(ps aux | grep 'nginx' | awk '{print $2}' | wc -l) > 0 ))
+then
+echo -e "\rnginx is already running"
+else
+mkdir -p /var/log/nginx /var/tmp/nginx /var/lib/nginx /var/lib/nginx/tmp /var/lib/nginx/logs
+/usr/sbin/nginx -g 'daemon off;' &
+echo -e "\rnginx has started"
+fi
+
+
 
 							#version list
 
 hostname -i
+hostname
 composer -V
 curl http://localhost:9200
 redis-cli --version
