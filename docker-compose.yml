@@ -10,15 +10,13 @@ services:
       - "9200:9200"
     tty: true
     volumes:
-      - ./volumes/code/:/var/www/html/
-      - ./volumes/logs/nginx.logs:/var/log/nginx/
-      - ./volumes/logs/php7.logs:/var/log/php7/
-      - ./volumes/logs/redis.logs:/var/log/redis/
-      - ./volumes/database/:/var/lib/
+      - ./volumes/code/:/var/www/html
+      - ./volumes/logs/nginx.logs:/var/log/nginx
+      - ./volumes/logs/php7.logs:/var/log/php7
+      - ./volumes/database/:/var/lib
       - ./volumes/composer_cache:/root/.composer/cache
       - ./volumes/esdata:/usr/share/elasticsearch/data
       - ./volumes/logs/elasticsearch.logs:/usr/share/elasticsearch/logs
-#      - ./volumes/mysql_data:/tmp
     networks:
       magento_compose:
        ipv4_address: 172.21.0.5
