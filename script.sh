@@ -1,8 +1,6 @@
 #/bin/sh
 
 composer self-update 2.3.4
-mkdir /var/www
-mkdir /var/www/html
 cd /var/www/html/
 read -p "Enter the Magento Version :" version
 composer create-project --no-install --repository-url=https://repo.magento.com/ magento/project-community-edition=$version /var/www/html/magento

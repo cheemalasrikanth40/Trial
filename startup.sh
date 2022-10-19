@@ -21,15 +21,8 @@ else
 /usr/share/rabbitmq-server/sbin/rabbitmq-server &
 echo -e "\rrabbitmq has started"
 fi
-							#nginx
-#if (( $(ps aux | grep 'nginx' | awk '{print $2}' | wc -l) > 0 ))
-#then
-#echo -e "\rnginx is already running"
-#else
-#mkdir -p /var/log/nginx /var/tmp/nginx 
-#/usr/sbin/nginx -g 'daemon off;' &
-#echo -e "\rnginx has started"
-#fi
+						
+
 
 							#php
 if (( $(ps aux | grep 'php-fpm7' | awk '{print $2}' | wc -l) > 0 ))

@@ -37,7 +37,7 @@ COPY --from=php /usr/sbin/php-fpm7 /usr/sbin/php-fpm7
 COPY --from=php /etc/php7/ /etc/php7/
 COPY --from=php /etc/profile /etc/profile
 COPY --from=php /usr/share/rabbitmq-server /usr/share/rabbitmq-server
-RUN apk add --no-cache nginx \
+RUN apk add --no-cache \
 curl \
 #mysql \
 mysql \
@@ -55,15 +55,18 @@ addgroup mysql mysql &&\
 find /usr/share/mariadb/* -maxdepth 1 ! -name "english" -type d -not -path '.' -exec rm -rf {} + &&\
 
 #SSH
-mkdir -p ~/.ssh &&\
+mkdir -p ~/.ssh /var/www/html &&\
 addgroup -S magento && adduser -S -G magento magento -D -s /bin/ash &&\
 echo  "magento ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers &&\
 echo 'magento ALL=(ALL:ALL) /usr/sbin/nginx, /usr/bin/php, /usr/bin/mysql, /usr/bin/composer, /usr/sbin/crond' | EDITOR='tee -a' visudo &&\
 echo -e "magento\nmagento" | passwd magento &&\
 ssh-keygen -A &&\
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -N '' &&\
+#addgroup -S www-data &&\
 adduser -S -D -u 82 -s /sbin/nologin -h /var/www -G www-data www-data &&\
 usermod -a -G www-data magento &&\
+apk add nginx &&\
+
 
 
 
@@ -95,15 +98,13 @@ COPY --from=build /usr/bin/redis-server /usr/bin/redis-sentinel /usr/bin/redis-c
 COPY --from=build /bin/bash /bin/bash
 COPY --from=build /root/.ssh/ /root/.ssh/
 COPY --from=build /root/.composer/ /root/.composer/
-#COPY --from=build /usr/local/sbin/varnishd /usr/local/sbin/varnishd
 COPY --from=build /usr/local/bin/composer /usr/local/bin/composer
-#COPY --from=build /usr/local/lib/varnish /usr/local/lib/varnish
 COPY --from=build /var/log/php7/ /var/log/php7/
-
+COPY --from=build /home/magento /home/magento
 #varnish 
 RUN wget http://varnish-cache.org/downloads/varnish-6.4.0.tgz \
 && gunzip -c varnish-6.4.0.tgz | tar xvf - \
-&& apk --update --no-cache add -q \
+&& apk --update --no-cache add sudo git -q \
    autoconf \
    automake \
    build-base \
@@ -132,7 +133,7 @@ COPY elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY php.ini /etc/php7/php.ini
 COPY www.conf /etc/php7/php-fpm.d/
-copy default.vcl /etc/varnish/
+COPY default.vcl /etc/varnish/
 COPY script.sh /
 COPY startup.sh /startup.sh
 
